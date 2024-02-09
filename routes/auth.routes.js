@@ -98,7 +98,7 @@ router.post("/login", (req, res, next) => {
     .catch((error) => next(error));
 });
 
-//!LOGOUT//
+//!LOGOUT///
 
 router.post("/logout", (req, res, next) => {
   req.session.destroy((err) => {
