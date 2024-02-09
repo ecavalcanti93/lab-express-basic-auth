@@ -2,13 +2,14 @@ const { Router } = require("express");
 const User = require("../models/User.model");
 const mongoose = require("mongoose");
 const router = new Router();
-
+const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard.js");
 const bcryptjs = require("bcryptjs");
 
 const saltRounds = 10;
 
-router.get("/signup", (req, res) => res.render("auth/signup"));
-router.get("/userProfile", (req, res) => {
+router.get('/signup', isLoggedOut, (req, res) => res.render('auth/signup'))
+
+router.get("/userProfile", isLoggedIn, (req, res) => {
   res.render("users/user-profile", { userInSession: req.session.currentUser });
 });
 
@@ -99,16 +100,20 @@ router.post("/login", (req, res, next) => {
 
 //!LOGOUT//
 
-router.post('/logout', (req, res, next) => {
+router.post("/logout", (req, res, next) => {
+  req.session.destroy((err) => {
+    if (err) next(err);
 
-    req.session.destroy(err => {
-  
-      if (err) next(err);
-  
-      res.redirect('/');
-  
-    });
-  
+    res.redirect("/");
   });
+});
+
+router.get('/main', isLoggedIn, (req, res) => {
+    res.render('users/main');
+});
+
+router.get('/private', isLoggedIn, (req, res) => {
+    res.render('users/private');
+});
 
 module.exports = router;
